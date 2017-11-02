@@ -10,11 +10,15 @@
 #define run_time 42
 #define MAX_CUSTOMERS 420
 double accum = 0;
+double trans_time = 0;
+int index = 0;
+int index_customer = 0;
+struct timespec start, stop;
 struct customer
 {
-	timespec arrival_time;
-	timespec service_start_time;
-	timespec departure_time;
+	struct timespec arrival_time;
+	struct timespec service_start_time;
+	struct timespec departure_time;
 };
 
 customer qeue [MAX_CUSTOMERS] = {0};
@@ -29,15 +33,34 @@ static void * teller(void * teller_ID)
 	int data = * ID; // * dereferencing = Getting the value that is stored in the memory
 					 // location pointed by the pointer.
 	printf("Teller %d active!\n", data);
-	//pthread_mutex_lock (&mutexlist);
-	//pthread_mutex_unlock (&mutexlist);
 
 
+//	while(accum < run_time ||   )
+//	{
+//
+//	}
+
+	pthread_mutex_lock (&mutexlist);
+
+	if(qeue[index].arrival_time != 0)
+	{
+		clock_gettime(CLOCK_REALTIME, *qeue[index_customer].service_start_time);
+	}
+	else
+	{
+		index_customer++;
+	}
+
+	pthread_mutex_unlock (&mutexlist);
+
+	trans_time = (((rand()%8)+1)/10.0)*100000;
+	usleep (trans_time);
+	clock_gettime(CLOCK_REALTIME, *qeue[index_customer].departure_time);
 //	for (int j=0; j<5; j++)
 //	{
 //		printf("Hello World!\n");
 //		usleep(1000000);
-// 			}
+// 	}
 
 return NULL;
 }
@@ -72,7 +95,7 @@ int main(int argc, char *argv[]) {
 	pthread_join(thread3, NULL);
 
 
-	struct timespec start, stop;
+
 	clock_gettime(CLOCK_REALTIME, &start);
 
 
@@ -81,6 +104,11 @@ int main(int argc, char *argv[]) {
 	{
 		next_customer = (((rand()%4)+1)/10.0)*100000;
 		usleep(next_customer);
+
+		pthread_mutex_lock (&mutexlist);
+		clock_gettime(CLOCK_REALTIME, * qeue[index].arrival_time);
+		index++;
+		pthread_mutex_unlock (&mutexlist);
 
 		clock_gettime(CLOCK_REALTIME, &stop); // Keep checking the time until condition is fulfilled.
 		accum = (stop.tv_sec - start.tv_sec);// Calculation of elapsed time.
