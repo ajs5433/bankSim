@@ -7,7 +7,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define run_time 42
+#define run_time  42
 #define MAX_CUSTOMERS 420
 float accum = 0;
 float teller_break = 0;
